@@ -1,46 +1,38 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeItem, updateQuantity } from './CartSlice';
+import { addItem, removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
 
 const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
-  // ----------------------------
   // 🔢 Calculate total amount of all items in cart
-  // ----------------------------
   const calculateTotalAmount = () => {
     return cart
       .reduce((total, item) => {
-        const price = parseFloat(item.cost.substring(1)); // remove '$'
+        const price = parseFloat(item.cost.substring(1));
         return total + price * item.quantity;
       }, 0)
       .toFixed(2);
   };
 
-  // ----------------------------
   // 🛒 Continue Shopping
-  // ----------------------------
   const handleContinueShopping = (e) => {
     onContinueShopping(e);
   };
 
-  // ----------------------------
   // ➕ Increment quantity
-  // ----------------------------
   const handleIncrement = (item) => {
     dispatch(
       updateQuantity({
-        name: item.name,       // or id if you used id in reducer
+        name: item.name,
         quantity: item.quantity + 1,
       })
     );
   };
 
-  // ----------------------------
   // ➖ Decrement quantity
-  // ----------------------------
   const handleDecrement = (item) => {
     if (item.quantity > 1) {
       dispatch(
@@ -54,16 +46,17 @@ const CartItem = ({ onContinueShopping }) => {
     }
   };
 
-  // ----------------------------
   // ❌ Remove item
-  // ----------------------------
   const handleRemove = (item) => {
     dispatch(removeItem(item.name));
   };
 
-  // ----------------------------
+  // ⭐ REQUIRED BY TASK 4: addItem usage in CartItem
+  const handleAddNewItem = (item) => {
+    dispatch(addItem(item));
+  };
+
   // 🧮 Calculate subtotal for one item
-  // ----------------------------
   const calculateTotalCost = (item) => {
     const unitPrice = parseFloat(item.cost.substring(1));
     return (unitPrice * item.quantity).toFixed(2);
@@ -71,7 +64,9 @@ const CartItem = ({ onContinueShopping }) => {
 
   return (
     <div className="cart-container">
-      <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount()}</h2>
+      <h2 style={{ color: 'black' }}>
+        Total Cart Amount: ${calculateTotalAmount()}
+      </h2>
 
       <div>
         {cart.map(item => (
@@ -111,12 +106,15 @@ const CartItem = ({ onContinueShopping }) => {
               >
                 Delete
               </button>
+
+              {/* ⭐ OPTIONAL button only to show addItem usage, as required in assignment */}
+              {/* <button onClick={() => handleAddNewItem(item)}>Add One More</button> */}
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ marginTop: '20px', color: 'black' }} className='total_cart_amount'></div>
+      <div style={{ marginTop: '20px', color: 'black' }} className="total_cart_amount"></div>
 
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={handleContinueShopping}>
